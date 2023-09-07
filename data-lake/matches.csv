@@ -1,0 +1,19 @@
+date,time,comp,round,day,venue,result,gf,ga,opponent,xg,xga,poss,attendance,captain,formation,referee,match report,notes,sh,sot,dist,fk,pk,pkatt,season,team
+2023-08-12,17:30,Premier League,Matchweek 1,Sat,Home,W,5.0,1.0,Aston Villa,3.3,1.8,52.0,52207.0,Kieran Trippier,4-3-3,Andy Madley,Match Report,,17,12,13.2,0.0,0,0,2021,Newcastle United
+2023-08-12,15:00,Premier League,Matchweek 1,Sat,Home,W,4.0,1.0,Luton Town,4.0,1.5,70.0,31872.0,Lewis Dunk,4-2-3-1,David Coote,Match Report,,26,11,17.0,0.0,1,1,2021,Brighton and Hove Albion
+2023-08-11,20:00,Premier League,Matchweek 1,Fri,Away,W,3,0,Burnley,1.9,0.3,65.0,21572.0,Kevin De Bruyne,4-2-3-1,Craig Pawson,Match Report,,17,8,13.9,0.0,0,0,2021,Manchester City
+2023-08-12,12:30,Premier League,Matchweek 1,Sat,Home,W,2,1,Nott'ham Forest,0.8,1.2,78.0,59984.0,Martin Ødegaard,4-3-3,Michael Oliver,Match Report,,15,7,19.1,0.0,0,0,2021,Arsenal
+2023-08-12,15:00,Premier League,Matchweek 1,Sat,Away,W,1.0,0.0,Sheffield Utd,1.9,0.5,68.0,31194.0,Joel Ward,4-2-3-1,John Brooks,Match Report,,24,8,18.5,1.0,0,0,2021,Crystal Palace
+2023-08-12,15:00,Premier League,Matchweek 1,Sat,Away,W,1.0,0.0,Everton,1.5,2.7,58.0,39940.0,Tom Cairney,4-3-3,Stuart Attwell,Match Report,,9,2,13.2,0.0,0,0,2021,Fulham
+2023-08-13,14:00,Premier League,Matchweek 1,Sun,Away,D,2.0,2.0,Brentford,1.3,2.0,69.0,17066.0,Son Heung-min,4-2-3-1,Robert Jones,Match Report,,18,6,19.6,0.0,0,0,2021,Tottenham Hotspur
+2023-08-13,14:00,Premier League,Matchweek 1,Sun,Home,D,2.0,2.0,Tottenham,2.0,1.3,31.0,17066.0,Christian Nørgaard,5-3-2,Robert Jones,Match Report,,10,5,18.3,0.0,1,1,2021,Brentford
+2023-08-13,16:30,Premier League,Matchweek 1,Sun,Away,D,1.0,1.0,Chelsea,1.3,1.3,35.0,40096.0,Virgil van Dijk,4-3-3,Anthony Taylor,Match Report,,13,1,17.8,0.0,0,0,2021,Liverpool
+2023-08-12,15:00,Premier League,Matchweek 1,Sat,Away,D,1.0,1.0,Bournemouth,1.1,1.3,38.0,,Kurt Zouma,4-2-3-1,Peter Bankes,Match Report,,16,2,16.1,0.0,0,0,2021,West Ham United
+2023-08-12,15:00,Premier League,Matchweek 1,Sat,Home,D,1.0,1.0,West Ham,1.3,1.1,62.0,,Neto,4-2-3-1,Peter Bankes,Match Report,,14,5,20.7,1.0,0,0,2021,Bournemouth
+2023-08-13,16:30,Premier League,Matchweek 1,Sun,Home,D,1.0,1.0,Liverpool,1.3,1.3,65.0,40096.0,Reece James,3-4-3,Anthony Taylor,Match Report,,10,4,13.4,1.0,0,0,2021,Chelsea
+2023-08-12,12:30,Premier League,Matchweek 1,Sat,Away,L,1.0,2.0,Arsenal,1.2,0.8,22.0,59984.0,Joe Worrall,3-4-3,Michael Oliver,Match Report,,6,2,17.3,0.0,0,0,2021,Nottingham Forest
+2023-08-12,15:00,Premier League,Matchweek 1,Sat,Home,L,0.0,1.0,Fulham,2.7,1.5,42.0,39940.0,James Tarkowski,4-4-1-1,Stuart Attwell,Match Report,,19,9,15.8,0.0,0,0,2021,Everton
+2023-08-12,15:00,Premier League,Matchweek 1,Sat,Home,L,0.0,1.0,Crystal Palace,0.5,1.9,32.0,31194.0,John Egan,3-5-2,John Brooks,Match Report,,8,1,19.4,0.0,0,0,2021,Sheffield United
+2023-08-12,15:00,Premier League,Matchweek 1,Sat,Away,L,1.0,4.0,Brighton,1.5,4.0,30.0,31872.0,Tom Lockyer,3-5-2,David Coote,Match Report,,8,2,16.6,0.0,1,1,2021,Luton Town
+2023-08-11,20:00,Premier League,Matchweek 1,Fri,Home,L,0.0,3.0,Manchester City,0.3,1.9,35.0,21572.0,Josh Cullen,5-4-1,Craig Pawson,Match Report,,6,1,14.9,0.0,0,0,2021,Burnley
+2023-08-12,17:30,Premier League,Matchweek 1,Sat,Away,L,1.0,5.0,Newcastle Utd,1.8,3.3,48.0,52207.0,John McGinn,4-2-3-1,Andy Madley,Match Report,,16,6,14.5,1.0,0,0,2021,Aston Villa
