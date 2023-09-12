@@ -1,46 +1,96 @@
-# import dash
-# from dash import dcc, html, callback
-# from dash.dependencies import Input, Output
+# from dash import dcc, html, State, Input, Output, callback
 # import dash_bootstrap_components as dbc
 # import pandas as pd
-# import plotly.graph_objs as go
 
 # player_df = pd.read_csv("clean_player_data.csv")
 
-# head_to_head_page_content = dbc.Container([
-#     dbc.Row([
-#         dbc.Col([
-#             html.Label("Select Season:"),
-#             dcc.Dropdown(
-#                 id='season-dropdown',
-#                 options=[{'label': s, 'value': s}
-#                          for s in player_df['season'].unique()],
-#                 value=None
-#             )
-#         ], width=6),
-#         dbc.Col([
-#             html.Label("Select Player 1:"),
-#             dcc.Dropdown(
-#                 id="player1-dropdown",
-#                 options=[{'label': player, 'value': player}
-#                          for player in player_df['player'].unique()],
-#                 value=None,
-#                 multi=False
-#             )
-#         ], width=6),
-#         dbc.Col([
-#             html.Label("Select Player 2:"),
-#             dcc.Dropdown(
-#                 id="player2-dropdown",
-#                 options=[{'label': player, 'value': player}
-#                          for player in player_df['player'].unique()],
-#                 value=None,
-#                 multi=False
-#             )
-#         ], width=6)
-#     ]),
-#     html.Div(id="player-comparison-output")
+# # First canvas dropdowns
+# offcanvas1_content = dbc.Row([
+#     dbc.Col([
+#         html.Label("Select Season:"),
+#         dcc.Dropdown(
+#             id='season-dropdown-canvas1',
+#             options=[{'label': s, 'value': s}
+#                      for s in player_df['season'].unique()],
+#             value=None
+#         )
+#     ], width=6),
+#     dbc.Col([
+#         html.Label("Select Player 1:"),
+#         dcc.Dropdown(
+#             id="player1-dropdown-canvas1",
+#             options=[{'label': player, 'value': player}
+#                      for player in player_df['player'].unique()],
+#             value=None,
+#             multi=False
+#         )
+#     ], width=6)
 # ])
+
+# # Second canvas dropdowns
+# offcanvas2_content = dbc.Row([
+#     dbc.Col([
+#         html.Label("Select Season:"),
+#         dcc.Dropdown(
+#             id='season-dropdown-canvas2',
+#             options=[{'label': s, 'value': s}
+#                      for s in player_df['season'].unique()],
+#             value=None
+#         )
+#     ], width=6),
+#     dbc.Col([
+#         html.Label("Select Player 2:"),
+#         dcc.Dropdown(
+#             id="player1-dropdown-canvas2",
+#             options=[{'label': player, 'value': player}
+#                      for player in player_df['player'].unique()],
+#             value=None,
+#             multi=False
+#         )
+#     ], width=6)
+# ])
+
+# # First canvas Offcanvas
+# offcanvas1 = html.Div(
+#     [
+#         dbc.Button(
+#             [html.I(className="bi bi-plus-circle me-2"),
+#              "Add a player for Canvas 1"],
+#             id="open-offcanvas-canvas1",
+#             n_clicks=0,
+#             outline=True,
+#         ),
+#         dbc.Offcanvas(
+#             offcanvas1_content,
+#             id="offcanvas-canvas1",
+#             title="Canvas 1",
+#             placement="end",
+#             is_open=False,
+#         ),
+#     ],
+#     className="button_group d-flex justify-content-center align-items-center"
+# )
+
+# # Second canvas Offcanvas
+# offcanvas2 = html.Div(
+#     [
+#         dbc.Button(
+#             [html.I(className="bi bi-plus-circle me-2"),
+#              "Add a player for Canvas 2"],
+#             id="open-offcanvas-canvas2",
+#             n_clicks=0,
+#             outline=True,
+#         ),
+#         dbc.Offcanvas(
+#             offcanvas2_content,
+#             id="offcanvas-canvas2",
+#             title="Canvas 2",
+#             placement="end",
+#             is_open=False,
+#         ),
+#     ],
+#     className="button_group d-flex justify-content-center align-items-center"
+# )
 
 
 # def generate_player_card(player, player_data, selected_season):
@@ -71,7 +121,7 @@
 
 #     card = dbc.Card(
 #         dbc.CardBody(summary_content),
-#         style={'margin': '20px'}
+#         style={'margin-top': '10px'}
 #     )
 
 #     return card
@@ -79,101 +129,191 @@
 
 # @callback(
 #     Output("player-comparison-output", "children"),
-#     Input("player1-dropdown", "value"),
-#     Input("player2-dropdown", "value"),
-#     Input('season-dropdown', 'value')
+#     Input("player1-dropdown-canvas1", "value"),
+#     Input("player1-dropdown-canvas2", "value"),
+#     Input("season-dropdown-canvas1", "value"),
+#     Input("season-dropdown-canvas2", "value"),
 # )
-# def update_player_comparison(player1, player2, selected_season):
-#     if player1 is None or player2 is None:
-#         return html.Div("Select two players to compare.")
+# def update_player_comparison(player1_canvas1, player1_canvas2, season_canvas1, season_canvas2):
+#     player_cards = []
 
-#     # Filter the player DataFrame for the selected players
-#     player1_data = player_df[(player_df['player'] == player1) & (
-#         player_df['season'] == selected_season)]
-#     player2_data = player_df[(player_df['player'] == player2) & (
-#         player_df['season'] == selected_season)]
+#     def generate_player_card_div(player, player_data, selected_season):
+#         player_card = generate_player_card(
+#             player, player_data, selected_season)
+#         return dbc.Col(player_card, width=6)
 
-#     if player1_data.empty or player2_data.empty:
-#         return html.Div("Selected players or season not found in the dataset. Please choose different players or season.")
+#     if player1_canvas1 and season_canvas1:
+#         player1_data = player_df[(player_df['player'] == player1_canvas1) & (
+#             player_df['season'] == season_canvas1)]
+#         if not player1_data.empty:
+#             player_cards.append(
+#                 generate_player_card_div(player1_canvas1, player1_data, season_canvas1))
 
-#     player_1_card = generate_player_card(
-#         player1, player1_data, selected_season)
-#     player_2_card = generate_player_card(
-#         player2, player2_data, selected_season)
+#     if player1_canvas2 and season_canvas2:
+#         player1_data = player_df[(player_df['player'] == player1_canvas2) & (
+#             player_df['season'] == season_canvas2)]
+#         if not player1_data.empty:
+#             player_cards.append(
+#                 generate_player_card_div(player1_canvas2, player1_data, season_canvas2))
 
-#     cards_row = dbc.Row([
-#         dbc.Col(player_1_card, width=6),
-#         dbc.Col(player_2_card, width=6)
-#     ])
-
-#     return cards_row
+#     return dbc.Row(player_cards)
 
 
+# @callback(
+#     Output("offcanvas-canvas1", "is_open"),
+#     Input("open-offcanvas-canvas1", "n_clicks"),
+#     [State("offcanvas-canvas1", "is_open")],
+# )
+# def toggle_offcanvas_canvas1(n1, is_open):
+#     if n1:
+#         return not is_open
+#     return is_open
+
+
+# @callback(
+#     Output("offcanvas-canvas2", "is_open"),
+#     Input("open-offcanvas-canvas2", "n_clicks"),
+#     [State("offcanvas-canvas2", "is_open")],
+# )
+# def toggle_offcanvas_canvas2(n1, is_open):
+#     if n1:
+#         return not is_open
+#     return is_open
+
+
+# head_to_head_page_content = dbc.Container([
+#     html.Div([
+#         dbc.Row([
+#             dbc.Col(
+#                 [offcanvas1],  width=6,
+#             ),
+#             dbc.Col(
+#                 [offcanvas2],  width=6,
+#             )
+#         ], className="d-flex flex-row justify-content-center align-items-center")
+#     ]),
+#     html.Div(id="player-comparison-output")
+# ])
+
+
+import pandas as pd
 import dash
-from dash import dcc, html, State, callback
+from dash import dcc, html, callback
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
-import pandas as pd
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 
-player_df = pd.read_csv("clean_player_data.csv")
+player_df = pd.read_csv("./data/player_df.csv")
 
-offcanvas_content = dbc.Row([
-    dbc.Col([
-            html.Label("Select Season:"),
-            dcc.Dropdown(
-                id='season-dropdown',
-                options=[{'label': s, 'value': s}
-                         for s in player_df['season'].unique()],
-                value=None
-            )
-            ], width=6),
-    dbc.Col([
-            html.Label("Select Player 1:"),
-            dcc.Dropdown(
-                id="player1-dropdown",
-                options=[{'label': player, 'value': player}
-                         for player in player_df['player'].unique()],
-                value=None,
-                multi=False
-            )
-            ], width=6),
-    dbc.Col([
-            html.Label("Select Player 2:"),
-            dcc.Dropdown(
-                id="player2-dropdown",
-                options=[{'label': player, 'value': player}
-                         for player in player_df['player'].unique()],
-                value=None,
-                multi=False
-            )
-            ], width=6)
-]),
-
-offcanvas = html.Div(
-    [
-        dbc.Button(
-            "Open Offcanvas", id="open-offcanvas-placement", n_clicks=0
-        ),
-        dbc.Offcanvas(
-            offcanvas_content,
-            id="offcanvas-placement",
-            title="Placement",
-            placement="end",  # Set the default placement to 'end'
-            is_open=False,
-        ),
-    ]
-)
-
-
-head_to_head_page_content = dbc.Container([
-    offcanvas,  # Add the OpenCanvas component here
-    html.Div(id="player-comparison-output")
+head_to_head_page_content = html.Div([
+    dbc.Row([
+        dbc.Col(dcc.Dropdown(
+            id='team-dropdown',
+            options=[{'label': t, 'value': t}
+                for t in player_df['team'].unique()],
+            value=player_df['team'].iloc[0]
+        )),
+        dbc.Col(dcc.Dropdown(
+            id='team-dropdown-2',
+            options=[{'label': t, 'value': t}
+                for t in player_df['team'].unique()],
+            value=player_df['team'].iloc[0]
+        )),
+        dbc.Col(dcc.Dropdown(
+            id='season-dropdown',
+            options=[{'label': s, 'value': s}
+                for s in player_df['season'].unique()],
+            value=player_df['season'].iloc[0]
+        )),
+        dbc.Col(dcc.Dropdown(
+            id='player-dropdown',
+            options=[{'label': p, 'value': p}
+                for p in player_df['player'].unique()],
+            value=player_df['player'].iloc[0]
+        )),
+        dbc.Col(dcc.Dropdown(
+            id='player-dropdown-2',
+            options=[{'label': p, 'value': p}
+                for p in player_df['player'].unique()],
+            multi=False,
+            placeholder="Select Player 2"
+        )),
+    ], ),
+    html.Div(id='player-summary'),
+    # dcc.Graph(id='radar-chart')
 ])
 
 
+@callback(
+    Output('team-dropdown-2', 'options'),
+    [Input('season-dropdown', 'value')]
+)
+def update_teams_dropdown(selected_season):
+    if not selected_season:
+        return []
+
+    # Filter teams based on the selected season
+    teams_for_season = player_df[player_df['season']
+                                 == selected_season]['team'].unique()
+
+    team_options = [{'label': team, 'value': team}
+                    for team in teams_for_season]
+
+    return team_options
+
+
+@callback(
+    Output('team-dropdown-2', 'value'),
+    [Input('season-dropdown', 'value')]
+)
+def update_team_dropdown_2_value(selected_season):
+    if not selected_season:
+        return None
+
+    # Get the first available team for the selected season
+    teams_for_season = player_df[player_df['season']
+                                 == selected_season]['team'].unique()
+
+    if len(teams_for_season) > 0:
+        return teams_for_season[0]
+
+    return None
+
+
+@callback(
+    [Output('player-dropdown', 'options'),
+     Output('player-dropdown', 'value'),
+     Output('player-dropdown-2', 'options'),
+     Output('player-dropdown-2', 'value')],
+    [Input('team-dropdown', 'value'),
+     Input('team-dropdown-2', 'value'),
+     Input('season-dropdown', 'value')]
+)
+def update_players_and_value(selected_team_1, selected_team_2, selected_season):
+    if not selected_team_1 or not selected_team_2:
+        return [], None, [], None
+
+    selected_1 = player_df[(player_df['team'] == selected_team_1) & (
+        player_df['season'] == selected_season)]
+    selected_2 = player_df[(player_df['team'] == selected_team_2) & (
+        player_df['season'] == selected_season)]
+
+    player_options_1 = [{'label': p, 'value': p}
+                        for p in selected_1['player'].unique()]
+    player_options_2 = [{'label': p, 'value': p}
+                        for p in selected_2['player'].unique()]
+
+    return player_options_1, player_options_1[0]['value'], player_options_2, player_options_2[1]['value']
+
+
 def generate_player_card(player, player_data, selected_season):
+
+    img_url = player_data['img_url'].values[0]
+
+    img_tag = html.Img(src=img_url, alt=player, style={'max-width': '100px'})
+
     summary_items = [
+        img_tag,
         html.P(f"{player} in {selected_season}", style={
                'font-weight': 'bold', 'font-size': '18px'})
     ]
@@ -207,28 +347,24 @@ def generate_player_card(player, player_data, selected_season):
 
 
 @callback(
-    Output("player-comparison-output", "children"),
-    Input("player1-dropdown", "value"),
-    Input("player2-dropdown", "value"),
-    Input('season-dropdown', 'value')
+    Output('player-summary', 'children'),
+    [Input('player-dropdown', 'value'),
+     Input('player-dropdown-2', 'value'),
+     Input('season-dropdown', 'value')]
 )
-def update_player_comparison(player1, player2, selected_season):
-    if player1 is None or player2 is None:
-        return html.Div("Select two players to compare.")
+def update_summary(player_1, player_2, selected_season):
+    if not player_1 or not player_2:
+        return html.P("Please select players from both teams to compare.")
 
-    # Filter the player DataFrame for the selected players
-    player1_data = player_df[(player_df['player'] == player1) & (
+    player_data_1 = player_df[(player_df['player'] == player_1) & (
         player_df['season'] == selected_season)]
-    player2_data = player_df[(player_df['player'] == player2) & (
+    player_data_2 = player_df[(player_df['player'] == player_2) & (
         player_df['season'] == selected_season)]
-
-    if player1_data.empty or player2_data.empty:
-        return html.Div("Selected players or season not found in the dataset. Please choose different players or season.")
 
     player_1_card = generate_player_card(
-        player1, player1_data, selected_season)
+        player_1, player_data_1, selected_season)
     player_2_card = generate_player_card(
-        player2, player2_data, selected_season)
+        player_2, player_data_2, selected_season)
 
     cards_row = dbc.Row([
         dbc.Col(player_1_card, width=6),
@@ -238,20 +374,50 @@ def update_player_comparison(player1, player2, selected_season):
     return cards_row
 
 
-@callback(
-    Output("offcanvas-placement", "is_open"),
-    Input("open-offcanvas-placement", "n_clicks"),
-    [State("offcanvas-placement", "is_open")],
-)
-def toggle_offcanvas(n1, is_open):
-    if n1:
-        return not is_open
-    return is_open
+# @callback(
+#     Output('radar-chart', 'figure'),
+#     [Input('player-dropdown', 'value'),
+#      Input('player-dropdown-2', 'value'),
+#      Input('season-dropdown', 'value')]
+# )
+# def update_radar_chart(player_1, player_2, selected_season):
+#     if not player_1 or not player_2:
+#         return go.Figure()
 
+#     player_data_1 = player_df[(player_df['player'] == player_1) & (
+#         player_df['season'] == selected_season)]
+#     player_data_2 = player_df[(player_df['player'] == player_2) & (
+#         player_df['season'] == selected_season)]
 
-@callback(
-    Output("offcanvas-placement", "placement"),
-    Input("offcanvas-placement-selector", "value"),
-)
-def toggle_placement(placement):
-    return placement
+#     # Extract relevant attributes for radar chart
+#     attributes = ['age', 'gls', 'ast', 'starts', 'min', 'prgc', 'prgp']
+
+#     values_1 = player_data_1[attributes].values[0]
+#     values_2 = player_data_2[attributes].values[0]
+
+#     maxxx = range = [0, max(max(values_1), max(values_2))]
+
+#     fig = go.Figure()
+
+#     fig.add_trace(go.Scatterpolar(
+#         r=values_1,
+#         theta=attributes,
+#         fill='toself',
+#         name=player_1
+#     ))
+
+#     fig.add_trace(go.Scatterpolar(
+#         r=values_2,
+#         theta=attributes,
+#         fill='toself',
+#         name=player_2
+#     ))
+
+#     fig.update_layout(
+#         polar=dict(
+#             radialaxis=dict(visible=True, range=[0, 100])
+#         ),
+#         showlegend=True
+#     )
+
+#     return fig

@@ -10,9 +10,9 @@ from header import Header
 from stat_card_img import StatCardImage
 from stat_card import StatCard
 
-matches_df = pd.read_csv("matches_df.csv")
-misc_df = pd.read_csv("squad_misc_stats.csv")
-player_df = pd.read_csv("clean_player_data.csv")
+matches_df = pd.read_csv("./data/matches_df.csv")
+misc_df = pd.read_csv("./data/squad_misc_df.csv")
+player_df = pd.read_csv("./data/player_df.csv")
 
 # Define the layout of the app
 team_analysis_page_content = dbc.Container([

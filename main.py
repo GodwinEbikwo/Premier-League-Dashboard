@@ -13,7 +13,7 @@ SIDEBAR_STYLE = {
     "bottom": 0,
     "width": "13rem",
     "padding": "2rem 1rem",
-    "background-color": "#fff",
+    "background": "#fff",
 }
 
 CONTENT_STYLE = {
@@ -40,9 +40,9 @@ sidebar = html.Div(
 content = html.Div(id="page-content", style=CONTENT_STYLE)
 
 # data
-matches_df = pd.read_csv("matches_df.csv")
-misc_df = pd.read_csv("squad_misc_stats.csv")
-player_df = pd.read_csv("clean_player_data.csv")
+matches_df = pd.read_csv("./data/matches_df.csv")
+misc_df = pd.read_csv("./data/squad_misc_df.csv")
+player_df = pd.read_csv("./data/player_df.csv")
 
 data_store = html.Div([dcc.Store(id="teams-df", data=matches_df.to_json()),
                        dcc.Store(id="squad-misc-df", data=misc_df.to_json()),
@@ -58,6 +58,7 @@ external_stylesheets = [
         "rel": "stylesheet",
     },
     dbc.themes.BOOTSTRAP,
+    dbc.icons.BOOTSTRAP,
 ]
 
 # Initialize the Dash app

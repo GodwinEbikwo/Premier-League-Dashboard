@@ -8,7 +8,7 @@ body {
   padding: 0;
   font-size: 14px;
   color: #000;
-  background-color: #f8f9fa;
+  background: #f8f9fa;
 }
 
 .plotly div {
@@ -87,6 +87,15 @@ body {
 .div10 {
   grid-column: 1 / span 4;
   grid-row: 5 / span 1;
+}
+
+.button_group{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10rem;
+  border: 1px solid rgba(83, 81, 81, 0.2);
+  border-radius: 7px;
 }
 
 /* 'div1 div2 div3 div4
