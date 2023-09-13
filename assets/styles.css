@@ -11,6 +11,17 @@ body {
   background: #f8f9fa;
 }
 
+div{
+  margin-bottom: 0px;
+}
+
+
+.img_styles{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .plotly div {
   font-family: "IBM Plex Sans", sans-serif !important;
 }

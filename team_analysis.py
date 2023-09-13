@@ -24,8 +24,8 @@ team_analysis_page_content = dbc.Container([
                               "./assets/images/yellow-card.png"),
                 StatCardImage("Red Cards", "red-cards-label", "div2",
                               "./assets/images/red-card.png"),
-                StatCard("Own Goals Conceded", "own-goals-label", "div3"),
-                StatCard("Fouls Committed", "fouls-committed-label", "div4"),
+                StatCard("Fouls Committed", "fouls-committed-label", "div3"),
+                StatCard("Own Goals Conceded", "own-goals-label", "div4"),
 
                 html.Div(
                     id="timeline-chart-container",
@@ -42,15 +42,8 @@ team_analysis_page_content = dbc.Container([
                 ),
 
 
-                html.Div(
-                    className="grid__card div6",
-                    children=[
-                        "In the 38 games"
-                    ]
-                ),
-
+                StatCard("Penalty Kicks Won", "pkwon-label", "div6"),
                 StatCard("Top Scorer", "top-scorer-label", "div7"),
-
 
                 html.Div(
                     className="grid__card div8",
@@ -149,7 +142,7 @@ def update_team_goals_stats(selected_team, selected_season):
     Output("pie-goal-stats", "children"),
     Output("timeline-chart", "children"),
     Input("team-dropdown", "value"),
-    Input("season-dropdown", "value")
+    Input("season-dropdown", "value"),
 )
 def update_team_overall_stats(selected_team, selected_season):
     if selected_team is None or selected_season is None:
@@ -197,21 +190,28 @@ def calculate_team_stats(selected_team, selected_season):
         (misc_df["season"] == selected_season)
     ]
 
+    print(filtered_squad_df.info())
+
     # Calculate yellow and red cards
     yellow_cards = filtered_squad_df["yellow_card"].sum()
+
     red_cards = filtered_squad_df["red_card"].sum()
+
     fouls_committed = filtered_squad_df["fouls_committed"].sum()
     own_goals = filtered_squad_df["own_goals"].sum()
 
-    return yellow_cards, red_cards, fouls_committed, own_goals,
+    pkwon = filtered_squad_df["pkwon"].sum()
+
+    return yellow_cards, red_cards, fouls_committed, own_goals, pkwon
 
 
 @callback(
     [
         Output("yellow-cards-label", "children"),
         Output("red-cards-label", "children"),
-        Output("own-goals-label", "children"),
         Output("fouls-committed-label", "children"),
+        Output("own-goals-label", "children"),
+        Output("pkwon-label", "children"),
     ],
     [
         Input("team-dropdown", "value"),
@@ -219,36 +219,39 @@ def calculate_team_stats(selected_team, selected_season):
     ]
 )
 def update_team_stats(selected_team, selected_season):
-    yellow_cards, red_cards, fls, own_goals,  = calculate_team_stats(
+    yellow_cards, red_cards, fls, own_goals, pkwon = calculate_team_stats(
         selected_team, selected_season)
 
     yellow_cards_label = f"{yellow_cards}"
     red_cards_label = f"{red_cards}"
     fouls_committed = f"{fls}"
     own_goals_label = f"{own_goals}"
+    pkwon_label = f"{pkwon}"
 
-    return yellow_cards_label, red_cards_label, fouls_committed,  own_goals_label,
+    return yellow_cards_label, red_cards_label, fouls_committed, own_goals_label, pkwon_label
 
 
 def calculate_team_scorers(selected_team, selected_season):
     if selected_team is None or selected_season is None:
         return "Select a team and season"
 
-    # Filter the player data for the selected team and season
-    team_season_data = player_df[(player_df["team"] == selected_team) &
-                                 (player_df["season"] == selected_season)]
+    # Filter dataframe
+    team_df = player_df[(player_df["team"] == selected_team) &
+                        (player_df["season"] == selected_season)]
 
-    if team_season_data.empty:
-        return f"No top scorer found for {selected_team} in {selected_season}"
+    if team_df.empty:
+        return f"No player data for {selected_team} in {selected_season}"
 
-    filtered_data = team_season_data[
-        ~team_season_data['player'].isin(['Opponent Total', 'Squad Total'])
-    ]
+    # Remove unwanted rows
+    filtered_df = team_df[~team_df['player'].isin(
+        ['Opponent Total', 'Squad Total'])]
 
-    player_goals_sum = filtered_data.groupby('player')['gls'].sum()
+    # Ensure 'gls' column is numeric
+    filtered_df['gls'] = pd.to_numeric(filtered_df['gls'], errors='coerce')
 
-    top_scorer = player_goals_sum.idxmax()
-    goals_scored = player_goals_sum.max()
+    # Get player with max goals
+    top_scorer = filtered_df.loc[filtered_df['gls'].idxmax(), 'player']
+    goals_scored = filtered_df['gls'].max()
 
     return top_scorer, goals_scored
 
@@ -274,17 +277,18 @@ def calculate_team_top_scorers(selected_team, selected_season):
         return "Select a team and season"
 
     # Filter the player data for the selected team and season
-    team_season_data = player_df[(player_df["team"] == selected_team) &
-                                 (player_df["season"] == selected_season)]
+    team_df = player_df[(player_df["team"] == selected_team) &
+                        (player_df["season"] == selected_season)]
 
-    if team_season_data.empty:
+    if team_df.empty:
         return f"No top scorer found for {selected_team} in {selected_season}"
 
-    filtered_data = team_season_data[
-        ~team_season_data['player'].isin(['Opponent Total', 'Squad Total'])
-    ]
+    filtered_df = team_df[~team_df['player'].isin(
+        ['Opponent Total', 'Squad Total'])]
 
-    player_goals_sum = filtered_data.groupby('player')['gls'].sum()
+    filtered_df['gls'] = pd.to_numeric(filtered_df['gls'], errors='coerce')
+
+    player_goals_sum = filtered_df.groupby('player')['gls'].sum()
     top_scorers = player_goals_sum.nlargest(5)
 
     return top_scorers

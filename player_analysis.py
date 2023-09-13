@@ -219,12 +219,18 @@ head_to_head_page_content = html.Div([
                 for t in player_df['team'].unique()],
             value=player_df['team'].iloc[0]
         )),
+    ], style={'margin-bottom': '10px'}),
+
+    dbc.Row([
         dbc.Col(dcc.Dropdown(
             id='season-dropdown',
             options=[{'label': s, 'value': s}
                 for s in player_df['season'].unique()],
             value=player_df['season'].iloc[0]
         )),
+    ], style={'margin-bottom': '10px'}),
+
+    dbc.Row([
         dbc.Col(dcc.Dropdown(
             id='player-dropdown',
             options=[{'label': p, 'value': p}
@@ -238,7 +244,7 @@ head_to_head_page_content = html.Div([
             multi=False,
             placeholder="Select Player 2"
         )),
-    ], ),
+    ]),
     html.Div(id='player-summary'),
     # dcc.Graph(id='radar-chart')
 ])
@@ -275,7 +281,7 @@ def update_team_dropdown_2_value(selected_season):
                                  == selected_season]['team'].unique()
 
     if len(teams_for_season) > 0:
-        return teams_for_season[0]
+        return teams_for_season[1]
 
     return None
 
@@ -307,40 +313,59 @@ def update_players_and_value(selected_team_1, selected_team_2, selected_season):
 
 
 def generate_player_card(player, player_data, selected_season):
-
     img_url = player_data['img_url'].values[0]
-
     img_tag = html.Img(src=img_url, alt=player, style={'max-width': '100px'})
-
-    summary_items = [
-        img_tag,
-        html.P(f"{player} in {selected_season}", style={
-               'font-weight': 'bold', 'font-size': '18px'})
-    ]
 
     fields = {
         'age': 'Age',
-        'nation': 'Nationality',
         'pos': 'Position',
-        'gls': 'Goals',
-        'ast': 'Assists',
-        'starts': 'Matches Started',
-        'min': 'Minutes Played',
-        'g-pk': 'Non Penalty Goals',
-        'crdr': 'Red Cards',
-        'crdy': 'Yellow Cards'
+        'nation': 'Nationality',
     }
 
-    for field, label in fields.items():
-        if field in player_data:
-            summary_items.append(
-                html.P(f"{label}: {player_data[field].values[0]}"))
+    performance = {
+        'gls': 'Goals',
+        'ast': 'Assists',
+        'g+a': 'Goals + Assists',
+        'g-pk': 'Non Penalty Goals',
+        'crdr': 'Red Cards',
+        'crdy': 'Yellow Cards',
+        'pkatt': 'Penalty kicks attempted'
+    }
 
-    summary_content = html.Div(summary_items)
+    # Create separate lists for summary and performance sections
+    summary_content = [
+        html.Div(img_tag, className="img_styles"),
+        html.Hr(),
+        html.H2(f"{player} in {selected_season}", style={
+                'font-weight': 'bold'}),
+        html.Hr(),
+        html.H6("Overview"),
+        html.Hr(),
+        *[html.P(f"{label}: {player_data[field].values[0]}")
+          for field, label in fields.items()
+          if field in player_data]
+    ]
+
+    performance_content = [
+        html.H6("Performance"),
+        html.Hr(),
+        *[
+            html.P(f"{label}: {player_data[field].values[0]}")
+            for field, label in performance.items()
+            if field in player_data
+        ]
+    ]
+
+    # Wrap the content lists in separate div elements
+    summary_content = html.Div(summary_content)
+    performance_content = html.Div(performance_content)
 
     card = dbc.Card(
-        dbc.CardBody(summary_content),
-        style={'margin': '20px'}
+        [
+            dbc.CardBody(summary_content, style={'padding': '0 1rem'}),
+            dbc.CardBody(performance_content, style={'padding': '0 1rem'})
+        ],
+        style={'margin': '10px 0px'}
     )
 
     return card
