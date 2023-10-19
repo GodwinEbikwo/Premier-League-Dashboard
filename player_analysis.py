@@ -197,13 +197,13 @@
 
 
 import pandas as pd
-import dash
 from dash import dcc, html, callback
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 
 player_df = pd.read_csv("./data/player_df.csv")
+player_df.drop_duplicates(inplace=True)
 
 head_to_head_page_content = html.Div([
     dbc.Row([
@@ -246,7 +246,8 @@ head_to_head_page_content = html.Div([
         )),
     ]),
     html.Div(id='player-summary'),
-    # dcc.Graph(id='radar-chart')
+    dcc.Graph(id='radar-chart'),
+    dcc.Graph(id='comparison-bar-chart')
 ])
 
 
@@ -397,6 +398,110 @@ def update_summary(player_1, player_2, selected_season):
     ])
 
     return cards_row
+
+
+@callback(
+    Output('radar-chart', 'figure'),
+    [Input('player-dropdown', 'value'),
+     Input('player-dropdown-2', 'value'),
+     Input('season-dropdown', 'value')]
+)
+def update_radar_chart(player_1, player_2, selected_season):
+    if not player_1 or not player_2:
+        return go.Figure()
+
+    # Filter data for the selected players and season
+    player_data_1 = player_df[(player_df['player'] == player_1) & (
+        player_df['season'] == selected_season)]
+    player_data_2 = player_df[(player_df['player'] == player_2) & (
+        player_df['season'] == selected_season)]
+
+    if player_data_1.empty or player_data_2.empty:
+        return go.Figure()
+
+    # Define the statistics to be included in the radar chart
+    categories = ['gls', 'ast', 'g+a', 'g-pk', 'crdr', 'crdy', 'pkatt']
+
+    # Extract the values for each player
+    player_1_values = [player_data_1.iloc[0][stat] for stat in categories]
+    player_2_values = [player_data_2.iloc[0][stat] for stat in categories]
+
+    # Create the radar chart
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatterpolar(
+        r=player_1_values,
+        theta=categories,
+        fill='toself',
+        name=player_1
+    ))
+
+    fig.add_trace(go.Scatterpolar(
+        r=player_2_values,
+        theta=categories,
+        fill='toself',
+        name=player_2
+    ))
+
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                # Set the range of values on the radial axis
+                range=[0, max(max(player_1_values), max(player_2_values)) + 2]
+            )),
+        showlegend=True
+    )
+
+    return fig
+
+
+@callback(
+    Output('comparison-bar-chart', 'figure'),
+    [Input('player-dropdown', 'value'),
+     Input('player-dropdown-2', 'value'),
+     Input('season-dropdown', 'value')]
+)
+def update_bar_chart(player_1, player_2, selected_season):
+    if not player_1 or not player_2:
+        return go.Figure()
+
+    # Filter data for the selected players and season
+    player_data_1 = player_df[(player_df['player'] == player_1) & (
+        player_df['season'] == selected_season)]
+    player_data_2 = player_df[(player_df['player'] == player_2) & (
+        player_df['season'] == selected_season)]
+
+    if player_data_1.empty or player_data_2.empty:
+        return go.Figure()
+
+    # Define the statistics to be included in the bar chart
+    categories = ['gls', 'ast', 'g+a', 'g-pk', 'crdr', 'crdy', 'pkatt']
+
+    # Extract the values for each player
+    player_1_values = [player_data_1.iloc[0][stat] for stat in categories]
+    player_2_values = [player_data_2.iloc[0][stat] for stat in categories]
+
+    # Create the bar chart
+    fig = go.Figure(data=[
+        go.Bar(name=player_1, x=categories, y=player_1_values),
+        go.Bar(name=player_2, x=categories, y=player_2_values)
+    ])
+
+    # Customize the layout
+    fig.update_layout(
+        barmode='group',
+        xaxis_title='Statistics',
+        yaxis_title='Values',
+        title='Player Comparison',
+        title_x=0.5,
+        xaxis=dict(tickvals=list(range(len(categories))), ticktext=categories),
+        yaxis=dict(title='Value'),
+        legend=dict(title='Players', orientation="h",
+                    yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+
+    return fig
 
 
 # @callback(

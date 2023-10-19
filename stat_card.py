@@ -10,7 +10,7 @@ def StatCard(title, title_id, style):
                 className="card-body",
                 children=[
                     html.Div(
-                        className="d-flex justify-content-center align-items-center flex-column",
+                        className="d-flex flex-column justify-content-center align-items-center flex-column",
                         children=[
                             html.Div(
                                 className="card-info w-100",
@@ -24,7 +24,7 @@ def StatCard(title, title_id, style):
                                             className="mb-2 mt-2 card-title mb-2",
                                             id=f"{title_id}",
                                             children=[title_id],
-                                            style={"font-size": "3vw"},
+                                            style={"font-size": "2.2vw"},
                                         ),
                                     ),
                                     html.Small(

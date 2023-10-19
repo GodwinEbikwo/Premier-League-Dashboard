@@ -14,6 +14,9 @@ matches_df = pd.read_csv("./data/matches_df.csv")
 misc_df = pd.read_csv("./data/squad_misc_df.csv")
 player_df = pd.read_csv("./data/player_df.csv")
 
+player_df.drop_duplicates(inplace=True)
+
+
 # Define the layout of the app
 team_analysis_page_content = dbc.Container([
     Header(matches_df),
@@ -231,7 +234,7 @@ def update_team_stats(selected_team, selected_season):
     return yellow_cards_label, red_cards_label, fouls_committed, own_goals_label, pkwon_label
 
 
-def calculate_team_scorers(selected_team, selected_season):
+def calculate_team_top_scorer(selected_team, selected_season):
     if selected_team is None or selected_season is None:
         return "Select a team and season"
 
@@ -264,7 +267,7 @@ def calculate_team_scorers(selected_team, selected_season):
     ]
 )
 def update_top_scorer(selected_team, selected_season):
-    top_scorer, goals_scored = calculate_team_scorers(
+    top_scorer, goals_scored = calculate_team_top_scorer(
         selected_team, selected_season)
 
     top_scorer_label = f"{top_scorer} with {goals_scored} goals"
@@ -272,24 +275,26 @@ def update_top_scorer(selected_team, selected_season):
     return top_scorer_label
 
 
-def calculate_team_top_scorers(selected_team, selected_season):
+def team_top_scorers(player_df, selected_team, selected_season):
     if selected_team is None or selected_season is None:
         return "Select a team and season"
 
+    # Ensure 'season' column is the appropriate type (string)
+    # If your 'season' column is already an integer, comment out the line below
+    # player_df['season'] = player_df['season'].astype(str)
+
     # Filter the player data for the selected team and season
     team_df = player_df[(player_df["team"] == selected_team) &
-                        (player_df["season"] == selected_season)]
+                        (player_df["season"].astype(str) == str(selected_season))]  # Convert season to string for comparison
 
     if team_df.empty:
-        return f"No top scorer found for {selected_team} in {selected_season}"
+        return f"No player data found for {selected_team} in {selected_season}"
 
-    filtered_df = team_df[~team_df['player'].isin(
-        ['Opponent Total', 'Squad Total'])]
+    # Ensure 'gls' column is numeric
+    team_df['gls'] = pd.to_numeric(team_df['gls'], errors='coerce')
 
-    filtered_df['gls'] = pd.to_numeric(filtered_df['gls'], errors='coerce')
-
-    player_goals_sum = filtered_df.groupby('player')['gls'].sum()
-    top_scorers = player_goals_sum.nlargest(5)
+    # Find the top 5 scorers
+    top_scorers = team_df.nlargest(5, 'gls')[['player', 'gls']]
 
     return top_scorers
 
@@ -302,30 +307,12 @@ def calculate_team_top_scorers(selected_team, selected_season):
     ]
 )
 def update_top_scorers_chart(selected_team, selected_season):
-    top_scorers = calculate_team_top_scorers(selected_team, selected_season)
+    top_scorers = team_top_scorers(player_df, selected_team, selected_season)
 
-    if not top_scorers.empty:
-        # Create a bar chart
-        fig = go.Figure(
-            data=[
-                go.Bar(
-                    x=top_scorers.index,
-                    y=top_scorers.values,
-                    text=top_scorers.values,
-                    textposition='auto',
-                )
-            ]
-        )
+    # If the returned value is a string, it means there was an error
+    if isinstance(top_scorers, str):
+        return dash.no_update
 
-        fig.update_layout(
-            title=f"Top 5 Scorers for {selected_team} in {selected_season}",
-            xaxis_title="Player",
-            yaxis_title="Goals",
-            paper_bgcolor="rgb(255,255,255,255)",
-            plot_bgcolor="rgb(255,255,255,255)",
-        )
-
-        return fig
-
-    # Return an empty chart if no top scorers found
-    return {}
+    fig = px.bar(top_scorers, x='player', y='gls',
+                 title=f"Top Scorers for {selected_team} in {selected_season}")
+    return fig
